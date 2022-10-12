@@ -2,8 +2,10 @@ class Usuario {
     constructor(nombre, apellido, libros, mascotas) {
         this.nombre = nombre
         this.apellido = apellido
-        this.libros =[{nombre:libros,
-        autor:"no definido"}]
+        this.libros = [{
+            nombre: libros,
+            autor: undefined
+        }]
         this.mascotas = [mascotas]
     }
     getFullName() {
@@ -27,8 +29,8 @@ class Usuario {
     addBook(nombre, autor) {
 
         this.libros.push({
-            nombre: nombre,
-            autor: autor
+            nombre,
+            autor
         })
 
         return console.log(this.libros)
@@ -37,10 +39,10 @@ class Usuario {
 
     getBookNames() {
 
-let nombresLibros = this.libros.map((e) =>e.nombre )
-return console.log(nombresLibros)
+        let nombresLibros = this.libros.map((e) => e.nombre)
+        return console.log(nombresLibros)
 
-}
+    }
 }
 
 const obj = new Usuario("Franco", "Pajello", "El señor de los anillos", "gato")
