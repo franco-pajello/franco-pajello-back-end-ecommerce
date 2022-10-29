@@ -1,0 +1,26 @@
+{
+  "name": "back-end-ecommerce",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franco-pajello/franco-pajello-back-end-ecommerce.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/franco-pajello/franco-pajello-back-end-ecommerce/issues"
+  },
+  "homepage": "https://github.com/franco-pajello/franco-pajello-back-end-ecommerce#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

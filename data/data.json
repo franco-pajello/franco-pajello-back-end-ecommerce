@@ -1,1 +1,42 @@
-[]
+[
+    {
+        "id": 1,
+        "producto": "galletitas",
+        "precio": 200
+    },
+    {
+        "id": 2,
+        "producto": "pan",
+        "precio": 300
+    },
+    {
+        "id": 3,
+        "producto": "jabon",
+        "precio": 100
+    },
+    {
+        "id": 4,
+        "producto": "mermelada",
+        "precio": 150
+    },
+    {
+        "id": 5,
+        "producto": "leche",
+        "precio": 70
+    },
+    {
+        "id": 6,
+        "producto": "lavandina",
+        "precio": 90
+    },
+    {
+        "id": 7,
+        "producto": "azufre",
+        "precio": 25
+    },
+    {
+        "id": 8,
+        "producto": "dulce de leche",
+        "precio": 115
+    }
+]

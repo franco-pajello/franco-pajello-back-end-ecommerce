@@ -1,5 +1,9 @@
 const fs = require("fs");
 const data = './data/data.json';
+const express = require("express");
+const APP = express()
+const PORT = process.env.PORT | 8080
+
 
 class productos {
     constructor(nombre) {
@@ -74,7 +78,7 @@ class productos {
 
             const archivoFormatoJs = JSON.parse(lecturaArchivo);
 
-            console.log(archivoFormatoJs);
+            return archivoFormatoJs;
         } catch (error) {
             console.log(error);
         }
@@ -115,23 +119,52 @@ class productos {
             console.log(error);
         }
     }
+    async getRandom() {
+        const lecturaArchivo = await fs.promises.readFile(data, "utf-8");
+
+        const archivoFormatoJs = JSON.parse(lecturaArchivo);
+
+        let objRandom = archivoFormatoJs[Math.floor(Math.random() * archivoFormatoJs.length)];
+
+        return objRandom;
+
+    }
 }
 
 const objeto = new productos(data)
 
-objeto.save({
-    id: null,
-    producto: "galletitas",
-    precio: 200
-});
-objeto.getById(7);
+APP.get("/", (req, res) => {
 
-objeto.deleteById(2);
 
-objeto.getAll();
+    res.send("hello word")
+})
 
-setTimeout(() => {
+APP.get("/productos", (req, res) => {
 
-    objeto.deleteAll();
-}, 0);
+    objeto.getAll()
+        .then(resp => {
+
+            res.json(resp)
+        })
+        .catch(error => {
+            console.error(error);
+        })
+})
+APP.get("/productosRandom", (req, res) => {
+
+    objeto.getRandom()
+        .then(resp => {
+
+            res.json(resp)
+        })
+        .catch(error => {
+            console.error(error);
+        })
+})
+
+
+APP.listen(PORT, () => {
+    console.log(`servidor htpp escuchado em el puerto http://localhost:${PORT}`)
+})
+
 
