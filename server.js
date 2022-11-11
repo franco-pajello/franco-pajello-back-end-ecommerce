@@ -1,14 +1,50 @@
 const fs = require('fs');
 const express = require('express');
 const multer = require('multer');
+const { engine } = require('express-handlebars');
 const data = './data/data.json';
 const APP = express();
 const PORT = process.env.PORT | 8080;
 const { Router } = express;
 const productosRuta = Router();
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(
+            null,
+            file.fieldname +
+            '-' +
+            Date.now() +
+            '.' +
+            file.originalname.split('.').pop()
+        );
+    },
+});
+const upload = multer({ storage: storage });
 
 APP.use(express.json());
+
 APP.use(express.urlencoded({ extended: true }));
+
+APP.use('/productos', productosRuta);
+
+APP.use(express.static('/public'));
+
+APP.set('view engine', 'hbs');
+
+APP.set('views', './views');
+
+APP.engine(
+    'hbs',
+    engine({
+        extname: '.hbs',
+        defaultLayout: 'index.hbs',
+        layoutsDir: __dirname + '/views/layouts',
+        partialsDir: __dirname + '/views/partials',
+    })
+);
 
 APP.listen(PORT, () => {
     console.log(`servidor htpp escuchado em el puerto http://localhost:${PORT}`);
@@ -124,32 +160,14 @@ class productos {
     }
 }
 const objeto = new productos();
-APP.use('/productos', productosRuta);
 
 APP.get('/', (req, res) => {
-    res.send('hello wordd');
+    res.render('partials/form', {});
 });
 
-APP.get('/uploadfile', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+APP.get('/form', (req, res) => {
+    res.render('partials/form', {});
 });
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads');
-    },
-    filename: function (req, file, cb) {
-        cb(
-            null,
-            file.fieldname +
-            '-' +
-            Date.now() +
-            '.' +
-            file.originalname.split('.').pop()
-        );
-    },
-});
-const upload = multer({ storage: storage });
 
 APP.post('/uploadfile', upload.single('myFile'), (req, res) => {
     const file = req.file;
@@ -158,20 +176,23 @@ APP.post('/uploadfile', upload.single('myFile'), (req, res) => {
     } else {
         const { body } = req;
 
-        objeto.save({ ...body, img: file.filename, path: file.path });
-        res.json({ success: true, msj: 200 });
+        objeto.save({ ...body, img: file.ruta, path: file.path });
+        res.redirect('http://localhost:8080/productos');
     }
 });
 
-productosRuta.get('', (req, res) => {
-    objeto
-        .getAll()
-        .then((resp) => {
-            res.json(resp);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+productosRuta.get('/', async (req, res) => {
+    try {
+        let productosss = await objeto.getAll();
+
+        if (productosss.length > 0) {
+            res.render('productos', { producto: productosss });
+        } else {
+            res.render('productos', { producto: false });
+        }
+    } catch (err) {
+        res.json({ error: err });
+    }
 });
 productosRuta.get('/productosRandom', (req, res) => {
     objeto
@@ -182,6 +203,17 @@ productosRuta.get('/productosRandom', (req, res) => {
         .catch((error) => {
             res.json({ error: 'error 404' });
         });
+});
+
+productosRuta.get('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    let buscandoProducto = await objeto.getById(id);
+    if (buscandoProducto == false) {
+        res.json({ error: 400, msj: 'solicitud no encontrada' });
+    } else {
+        res.json(buscandoProducto);
+    }
 });
 
 productosRuta.put('/:id', async (req, res) => {
@@ -201,16 +233,7 @@ productosRuta.put('/:id', async (req, res) => {
 
     res.send('ok');
 });
-productosRuta.get('/:id', async (req, res) => {
-    const { id } = req.params;
 
-    let buscandoProducto = await objeto.getById(id);
-    if (buscandoProducto == false) {
-        res.json({ error: 400, msj: 'solicitud no encontrada' });
-    } else {
-        res.json(buscandoProducto);
-    }
-});
 productosRuta.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
