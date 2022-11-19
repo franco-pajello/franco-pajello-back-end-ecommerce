@@ -1,12 +1,13 @@
 const fs = require('fs');
 const express = require('express');
 const multer = require('multer');
-const { engine } = require('express-handlebars');
 const data = './data/data.json';
 const APP = express();
+const http = require("http").createServer(APP)
 const PORT = process.env.PORT | 8080;
 const { Router } = express;
 const productosRuta = Router();
+const io = require("socket.io")(http)
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads');
@@ -30,21 +31,11 @@ APP.use(express.urlencoded({ extended: true }));
 
 APP.use('/productos', productosRuta);
 
-APP.use(express.static('/public'));
+APP.use('/public', express.static(__dirname + '/public'));
 
-APP.set('view engine', 'hbs');
+APP.set('view engine', 'ejs');
 
 APP.set('views', './views');
-
-APP.engine(
-    'hbs',
-    engine({
-        extname: '.hbs',
-        defaultLayout: 'index.hbs',
-        layoutsDir: __dirname + '/views/layouts',
-        partialsDir: __dirname + '/views/partials',
-    })
-);
 
 APP.listen(PORT, () => {
     console.log(`servidor htpp escuchado em el puerto http://localhost:${PORT}`);
@@ -183,13 +174,9 @@ APP.post('/uploadfile', upload.single('myFile'), (req, res) => {
 
 productosRuta.get('/', async (req, res) => {
     try {
-        let productosss = await objeto.getAll();
+        let productosArray = await objeto.getAll();
 
-        if (productosss.length > 0) {
-            res.render('productos', { producto: productosss });
-        } else {
-            res.render('productos', { producto: false });
-        }
+        res.render('pages/index', { producto: productosArray });
     } catch (err) {
         res.json({ error: err });
     }

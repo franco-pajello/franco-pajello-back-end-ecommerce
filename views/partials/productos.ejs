@@ -1,0 +1,10 @@
+<% if(producto.length > 0) {%> <% producto.forEach((produc)=>{ %>
+
+<p>
+  <%= produc.producto %> <br />
+  <img src="<%= produc.img %>" alt="#" />%> <br />
+  $ <%= produc.precio %>
+</p>
+<% } ) %> <% }else{ %>
+<h2>no hay productos</h2>
+<%}%>

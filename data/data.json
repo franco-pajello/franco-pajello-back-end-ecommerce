@@ -1,44 +1,44 @@
 [
   {
-    "id": 1,
-    "producto": "galletitas",
+    "identificación": 1,
+    "producto": " galletitas ",
     "precio": 200,
-    "img": "https://d3ugyf2ht6aenh.cloudfront.net/stores/001/029/111/products/nina-chocolate-gurumarket1-86581315dd554cafbd16052052285912-640-01-ea1f245786c04071cb16251839083688-1024-1024.jpg"
+    "img": " https://www.nutrovo.com/wp-content/uploads/2018/12/galletita-500x366.jpg"
   },
   {
-    "id": 3,
-    "producto": "jabonnn",
+    "identificación": 3,
+    "producto": " jabon",
     "precio": 100,
-    "img": "https://jumboargentina.vteximg.com.br/arquivos/ids/700572-750-750/Jabon-Liq-Corp-Lux-Rosas-Francesas-220ml-1-888595.jpg?v=637880531887700000"
+    "img": " https://jumboargentina.vteximg.com.br/arquivos/ids/700572-750-750/Jabon-Liq-Corp-Lux-Rosas-Francesas-220ml-1-888595.jpg?v=637880531887700000 "
   },
   {
-    "id": 4,
-    "producto": "mermelada",
+    "identificación": 4,
+    "producto": " mermelada ",
     "precio": 150,
-    "img": ""
+    "img": " "
   },
   {
-    "id": 5,
-    "producto": "leche",
+    "identificación": 5,
+    "producto": " leche ",
     "precio": 70,
-    "img": "https://www.supermercadoacuario.com.ar/app/files/company_35/products/65914_7793940448003.jpg"
+    "img": " https://www.supermercadoacuario.com.ar/app/files/company_35/products/65914_7793940448003.jpg "
   },
   {
-    "id": 6,
-    "producto": "lavandina",
+    "identificación": 6,
+    "producto": " lavandina ",
     "precio": 90,
-    "img": "https://arcencohogar.vtexassets.com/arquivos/ids/297412-800-800?v=637665760449770000&width=800&height=800&aspect=true"
+    "img": " https://arcencohogar.vtexassets.com/arquivos/ids/297412-800-800?v=637665760449770000&width=800&height=800&aspect=true "
   },
   {
-    "id": 7,
-    "producto": "azufre",
+    "identificación": 7,
+    "producto": " azufre ",
     "precio": 25,
-    "img": "https://argentinow.com/imagenes/archivos/2022-03/2248-quf_1648223950.jpg"
+    "img": " https://argentinow.com/imagenes/archivos/2022-03/2248-quf_1648223950.jpg "
   },
   {
-    "id": 8,
-    "producto": "dulce de leche",
+    "identificación": 8,
+    "producto": " dulce de leche ",
     "precio": 115,
-    "img": "https://images.vexels.com/media/users/3/210976/isolated/preview/e73575a74bc3288ce970078d575794ef-dulce-de-leche-dibujado-a-mano.png"
+    "img": " https://images.vexels.com/media/users/3/210976/isolated/preview/e73575a74bc3288ce970078d575794ef-dulce-de-leche-dibujado-a-mano.png "
   }
 ]
