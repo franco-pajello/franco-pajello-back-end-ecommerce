@@ -1,16 +1,13 @@
-<%- include ("../partials/navBar"); %>
-
-<form action="/uploadfile" enctype="multipart/form-data" method="POST">
+<form onsubmit="cargarProducto(); return false;">
   <label for="producto ">producto</label>
-  <input id="productoId" type="text" name="producto" />
+  <input id="productoId" type="text" name="producto" required />
   <br />
   <label for="precio ">precio</label>
-  <input id="precio" type="number" name="precio" />
+  <input type="number" id="precioId" name="precio" required />
   <br />
-
-  <input type="file" name="myFile" />
+  <label for="myFile">img url</label>
+  <input type="text" id="myFileId" name="myFile" required />
   <br />
-
   <input type="submit" value="cargar un producto" />
   <br />
 </form>

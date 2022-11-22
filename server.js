@@ -1,13 +1,16 @@
-const fs = require('fs');
+const productos = require('./productosContenedor');
+const chat = require('./chatContenedor');
 const express = require('express');
 const multer = require('multer');
-const data = './data/data.json';
+const { Socket } = require('socket.io');
+const objeto = new productos.productos();
+const chatConstructor = new chat.Chat();
 const APP = express();
-const http = require("http").createServer(APP)
 const PORT = process.env.PORT | 8080;
+const http = require('http').createServer(APP);
 const { Router } = express;
 const productosRuta = Router();
-const io = require("socket.io")(http)
+const io = require('socket.io')(http);
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads');
@@ -37,142 +40,11 @@ APP.set('view engine', 'ejs');
 
 APP.set('views', './views');
 
-APP.listen(PORT, () => {
+http.listen(PORT, () => {
     console.log(`servidor htpp escuchado em el puerto http://localhost:${PORT}`);
 });
 
-class productos {
-    constructor(nombre) {
-        this.nombre = nombre;
-    }
-
-    async save(obj) {
-        try {
-            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
-
-            const archivoFormatoJs = JSON.parse(lecturaArchivo);
-
-            if (archivoFormatoJs.length == 0) {
-                obj.id = 1;
-                archivoFormatoJs.push(obj);
-
-                let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
-
-                await fs.promises.writeFile(data, archivoFormatoTxt);
-
-                return console.log(obj.id);
-            } else {
-                let arraryId = archivoFormatoJs.map((e) => e.id);
-
-                let sumandoId = Math.max(...arraryId);
-
-                obj.id = sumandoId + 1;
-
-                archivoFormatoJs.push(obj);
-
-                let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
-
-                await fs.promises.writeFile(data, archivoFormatoTxt);
-
-                return console.log(obj.id);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async getById(id) {
-        try {
-            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
-
-            const archivoFormatoJs = JSON.parse(lecturaArchivo);
-
-            let buscandoId = archivoFormatoJs.filter((e) => (e.id == id) | null);
-
-            return buscandoId;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    async getAll() {
-        try {
-            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
-
-            const archivoFormatoJs = JSON.parse(lecturaArchivo);
-
-            return archivoFormatoJs;
-        } catch (error) {
-            console.error(error);
-        }
-    }
-    async deleteById(id) {
-        try {
-            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
-
-            const archivoFormatoJs = JSON.parse(lecturaArchivo);
-
-            const buscamosElementoId = archivoFormatoJs.find((e) => e.id == id);
-
-            const indice = archivoFormatoJs.indexOf(buscamosElementoId);
-
-            await archivoFormatoJs.splice(indice, 1);
-
-            let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
-
-            await fs.promises.writeFile('./data/data.json', archivoFormatoTxt);
-
-            return archivoFormatoJs;
-        } catch (error) {
-            return false;
-        }
-    }
-    async deleteAll() {
-        try {
-            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
-            let archivoFormatoJs = JSON.parse(lecturaArchivo);
-            archivoFormatoJs = [];
-            let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
-            await fs.promises.writeFile('./data/data.json', archivoFormatoTxt);
-            return console.log(archivoFormatoJs);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    async getRandom() {
-        const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
-
-        const archivoFormatoJs = JSON.parse(lecturaArchivo);
-
-        let objRandom =
-            archivoFormatoJs[Math.floor(Math.random() * archivoFormatoJs.length)];
-
-        return objRandom;
-    }
-}
-const objeto = new productos();
-
-APP.get('/', (req, res) => {
-    res.render('partials/form', {});
-});
-
-APP.get('/form', (req, res) => {
-    res.render('partials/form', {});
-});
-
-APP.post('/uploadfile', upload.single('myFile'), (req, res) => {
-    const file = req.file;
-    if (!file) {
-        res.send({ error: true });
-    } else {
-        const { body } = req;
-
-        objeto.save({ ...body, img: file.ruta, path: file.path });
-        res.redirect('http://localhost:8080/productos');
-    }
-});
-
-productosRuta.get('/', async (req, res) => {
+APP.get('/', async (req, res) => {
     try {
         let productosArray = await objeto.getAll();
 
@@ -181,6 +53,20 @@ productosRuta.get('/', async (req, res) => {
         res.json({ error: err });
     }
 });
+
+/* APP.post('/uploadfile', upload.single('myFile'), (req, res) => {
+    const file = req.file;
+    if (!file) {
+        res.send({ error: true });
+    } else {
+        const { body } = req;
+
+        objeto.save({ ...body, img: file.ruta, path: file.path });
+
+        res.redirect('http://localhost:8080');
+    }
+}); */
+
 productosRuta.get('/productosRandom', (req, res) => {
     objeto
         .getRandom()
@@ -231,4 +117,19 @@ productosRuta.delete('/:id', async (req, res) => {
     } else {
         res.json({ success: true });
     }
+});
+
+io.on('connection', (Socket) => {
+    Socket.on('prodActualizado', async (data) => {
+        const subiendoObjeto = await objeto.save(data);
+        const obteniendoObjeto = await objeto.getAll();
+
+        io.sockets.emit('producList', obteniendoObjeto);
+    });
+
+    Socket.on('msg', async (data) => {
+        await chatConstructor.save(data);
+        const todoElChat = await chatConstructor.getAll();
+        io.sockets.emit('chatLista', todoElChat);
+    });
 });
