@@ -34,10 +34,10 @@ class productos {
 
                 await fs.promises.writeFile(data, archivoFormatoTxt);
 
-                return { success: true }
+                return { success: true };
             }
         } catch (err) {
-            return { success: false, error: err }
+            return { success: false, error: err };
         }
     }
 
@@ -51,7 +51,7 @@ class productos {
 
             return buscandoId;
         } catch (err) {
-            return { success: false, error: err }
+            return { success: false, error: err };
         }
     }
 
@@ -63,7 +63,7 @@ class productos {
 
             return archivoFormatoJs;
         } catch (err) {
-            return { success: false, error: err }
+            return { success: false, error: err };
         }
     }
     async deleteById(id) {
@@ -84,7 +84,7 @@ class productos {
 
             return archivoFormatoJs;
         } catch (err) {
-            return { success: false, error: err }
+            return { success: false, error: err };
         }
     }
     async deleteAll() {
@@ -96,7 +96,7 @@ class productos {
             await fs.promises.writeFile('./data/data.json', archivoFormatoTxt);
             return console.log(archivoFormatoJs);
         } catch (err) {
-            return { success: false, error: err }
+            return { success: false, error: err };
         }
     }
     async getRandom() {

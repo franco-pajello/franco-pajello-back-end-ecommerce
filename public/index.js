@@ -1,5 +1,6 @@
 const socket = io();
 let html = '';
+/* 
 let productoNuevo = {
     producto: document.getElementById('productoId').value,
     precio: document.getElementById('precioId').value,
@@ -28,7 +29,7 @@ socket.on('producList', (data) => {
         precio: (document.getElementById('precioId').value = ''),
         img: (document.getElementById('myFileId').value = ''),
     };
-});
+}); */
 
 function enviarMsg() {
     const fechaActual = Date.now();
@@ -56,3 +57,34 @@ socket.on('chatLista', async (data) => {
 
     document.getElementById('textArea').value = '';
 });
+
+async function cargarProducto(a) {
+    let options = {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+        body: JSON.stringify({ a }),
+    };
+    await fetch('http://localhost:8080/api/carrito', options);
+}
+async function eliminarItemCarrito(value) {
+    try {
+        let options = {
+            method: 'DELETE',
+            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+        };
+        await fetch(`http://localhost:8080/api/carrito/${value}`, options);
+    } catch (e) {
+        console.log(e);
+    }
+}
+async function vaciarCarrito() {
+    try {
+        let options = {
+            method: 'DELETE',
+            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+        };
+        await fetch(`http://localhost:8080/api/carrito`, options);
+    } catch (e) {
+        console.log(e);
+    }
+}

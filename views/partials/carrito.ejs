@@ -1,0 +1,19 @@
+<% if(productoCarrito.length > 0) {%> <% productoCarrito.forEach((elemento)=>{ %>
+<div>
+  <div>
+    <ul>
+      <li><%= elemento.producto %></li>
+      <li><img src="<%= elemento.img %>" alt="#" />%></li>
+      <li><%= elemento.stock %></li>
+      <li>$<%= elemento.precio %></li>
+      <li>cantidad: <%= elemento.cantidad %></li>
+      <button>+</button>
+      <button>-</button>
+      <button onclick="eliminarItemCarrito(value)" value="<%=elemento.id %>">eliminar</button>
+    </ul>
+  </div>
+</div>
+<div><button onclick="vaciarCarrito()">Vaciar carrito</button></div>
+<% } ) %> <% }else{ %>
+<h2>no hay productos</h2>
+<%}%>

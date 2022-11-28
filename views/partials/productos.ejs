@@ -1,13 +1,20 @@
 <% if(producto.length > 0) {%> <% producto.forEach((produc)=>{ %>
-<div id="productos">
-  <div>
-    <ul>
-      <li><%= produc.producto %></li>
-      <li><img src="<%= produc.img %>" alt="#" />%></li>
-      <li>$<%= produc.precio %></li>
-    </ul>
+  <div id="productos">
+    <div>
+      <ul>
+        <li><%= produc.producto %></li>
+        <li><img src="<%= produc.img %>" alt="#" />%></li>
+        <li >stock: <%= produc.stock %></li>
+        <li>$<%= produc.precio %></li>
+        <% if(admin) {%>
+        <button >btn admin no configurado </button>
+        <button onclick="cargarProducto(value)" value="<%=produc.id %>">agregar al carrito</button>
+        <% }else{ %>
+        <button onclick="cargarProducto(value)" value="<%=produc.id %>">agregar al carrito</button> %>
+        <%}%>
+      </ul> 
+    </div>
   </div>
-</div>
-<% } ) %> <% }else{ %>
-<h2>no hay productos</h2>
-<%}%>
+  <% } ) %> <% }else{ %>
+        <h2>No hay productos</h2>
+        <%}%>
