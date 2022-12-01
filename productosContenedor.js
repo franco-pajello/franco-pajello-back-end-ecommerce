@@ -72,7 +72,7 @@ class productos {
 
             const archivoFormatoJs = JSON.parse(lecturaArchivo);
 
-            const buscamosElementoId = archivoFormatoJs.find((e) => e.id == id);
+            const buscamosElementoId = await archivoFormatoJs.find((e) => e.id == id);
 
             const indice = archivoFormatoJs.indexOf(buscamosElementoId);
 

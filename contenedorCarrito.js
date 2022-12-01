@@ -17,15 +17,16 @@ class carrito {
             );
 
             if (buscandoProductoCarrito < 0) {
+                obj.cantidad = 1;
                 await archivoFormatoJs.push(obj);
                 const archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
                 await fs.promises.writeFile(data, archivoFormatoTxt);
-                return;
+                return archivoFormatoJs;
             } else {
                 archivoFormatoJs[buscandoProductoCarrito].cantidad++;
                 let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
                 await fs.promises.writeFile(data, archivoFormatoTxt);
-                return;
+                return archivoFormatoJs;
             }
         } catch (err) {
             return { success: false, error: err };
@@ -61,19 +62,18 @@ class carrito {
                 return { success: ok };
             } else {
                 if (archivoFormatoJs.length > 1) {
-                    await archivoFormatoJs.filter((e) => {
-                        e.id !== id;
-                    });
+                    const buscandoProductoCarrito = await archivoFormatoJs.findIndex(
+                        (producto) => producto.id == id
+                    );
+                    await archivoFormatoJs.splice(buscandoProductoCarrito, 1);
                     let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
                     await fs.promises.writeFile(data, archivoFormatoTxt);
                 } else {
                     const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
-
                     const archivoFormatoJs = JSON.parse(lecturaArchivo);
                     await archivoFormatoJs.pop();
                     let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
 
-                    console.log(archivoFormatoTxt);
                     await fs.promises.writeFile(data, archivoFormatoTxt);
                 }
             }
@@ -88,7 +88,7 @@ class carrito {
             archivoFormatoJs = [];
             let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
             await fs.promises.writeFile('./data/carrito.json', archivoFormatoTxt);
-            return console.log(archivoFormatoJs);
+            return archivoFormatoJs;
         } catch (err) {
             return { success: false, error: err };
         }

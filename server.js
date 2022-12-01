@@ -1,11 +1,9 @@
 const productos = require('./productosContenedor');
 const fs = require('fs');
 const data = './data/carrito.json';
-const chat = require('./chatContenedor');
 const express = require('express');
 const multer = require('multer');
 const objeto = new productos.productos();
-const chatConstructor = new chat.Chat();
 const carrito = require('./contenedorCarrito');
 const carritoConstructor = new carrito.carrito();
 const APP = express();
@@ -14,10 +12,10 @@ const http = require('http').createServer(APP);
 const { Router } = express;
 const rutaBase = Router();
 const rutaCarrito = Router();
-const io = require('socket.io')(http);
+const cors = require('cors');
 
 //ADMIN
-const admin = true;
+const admin = false;
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -40,39 +38,35 @@ APP.use(express.json());
 
 APP.use(express.urlencoded({ extended: true }));
 
+APP.use(cors({ origin: '*' }));
+
 APP.use('/api/productos', rutaBase);
 
 APP.use('/api/carrito', rutaCarrito);
 
 APP.use('/public', express.static(__dirname + '/public'));
 
-APP.set('view engine', 'ejs');
-
-APP.set('views', './views');
-
 http.listen(PORT, () => {
     console.log(
         `servidor htpp escuchado em el puerto http://localhost:${PORT}/api/productos`
     );
 });
-//probar por frontend
-//para probar en postan activar lo comentado dentro del try
+
+APP.get('*', function (req, res) {
+    res.json({ error: 404, descripcion: 'solicitud no encontrada' });
+});
+
 rutaBase.get('', async (req, res) => {
     try {
         let productosArray = await objeto.getAll();
-
-        res.render('pages/index', { producto: productosArray, admin: admin });
-        //para probar con postman
-        // res.json(productosArray)
+        res.json({ productosArray, admin });
     } catch (err) {
         res.json({ error: err });
     }
 });
 
-//probar por postman
 rutaBase.get('/:id', async (req, res) => {
     const { id } = req.params;
-
     let buscandoProducto = await objeto.getById(id);
     if (buscandoProducto == false) {
         res.json({ error: 400, msj: 'solicitud no encontrada' });
@@ -81,7 +75,6 @@ rutaBase.get('/:id', async (req, res) => {
     }
 });
 
-//probar por frontend
 APP.post(
     '/uploadfile',
     (req, res, next) => {
@@ -91,23 +84,13 @@ APP.post(
             res.send({ error: 404, descripcion: 'no autorizado', método: 'post' });
         }
     },
-    upload.single('myFile'),
     (req, res) => {
-        const file = req.file;
-        console.log(file);
-        if (!file) {
-            res.send({ error: true });
-        } else {
-            const { body } = req;
-
-            objeto.save({ ...body, img: file.filename });
-
-            res.redirect('http://localhost:8080');
-        }
+        const { body } = req;
+        objeto.save({ ...body, img: body.img });
+        res.send('ok');
     }
 );
 
-//probar por postman
 rutaBase.put(
     '/:id',
     (req, res, next) => {
@@ -121,7 +104,8 @@ rutaBase.put(
         const { id } = req.params;
         const { body } = req;
         let todosLosProductos = await objeto.getAll();
-        const indiceEncontrado = todosLosProductos.findIndex(
+
+        const indiceEncontrado = await todosLosProductos.findIndex(
             (producto) => producto.id == id
         );
 
@@ -148,7 +132,6 @@ rutaBase.get('/productosRandom', (req, res) => {
         });
 });
 
-//probar por postman
 rutaBase.delete(
     '/:id',
     (req, res, next) => {
@@ -161,7 +144,7 @@ rutaBase.delete(
     async (req, res) => {
         const { id } = req.params;
 
-        let filtrandoProducto = objeto.deleteById(id);
+        let filtrandoProducto = await objeto.deleteById(id);
 
         if (filtrandoProducto == false) {
             res.json({ error: 'producto no encontrado' });
@@ -171,33 +154,16 @@ rutaBase.delete(
     }
 );
 
-io.on('connection', (Socket) => {
-    /*     Socket.on('prodActualizado', async (data) => {
-                    const subiendoObjeto = await objeto.save(data);
-                    const obteniendoObjeto = await objeto.getAll();
-            
-                    io.sockets.emit('producList', obteniendoObjeto);
-                }); */
-
-    Socket.on('msg', async (data) => {
-        await chatConstructor.save(data);
-        const todoElChat = await chatConstructor.getAll();
-        io.sockets.emit('chatLista', todoElChat);
-    });
-});
-
-//probar en frontend
-
 rutaCarrito.get('', async (req, res) => {
     try {
         let productosCarrito = await carritoConstructor.getAll();
 
-        res.render('pages/carritoIndex', { productoCarrito: productosCarrito });
+        res.json(productosCarrito);
     } catch (err) {
         res.json({ error: err });
     }
 });
-//probar en frontend
+
 rutaCarrito.post('', async (req, res) => {
     const todosLosProductosDb = await objeto.getAll();
 
@@ -208,12 +174,12 @@ rutaCarrito.post('', async (req, res) => {
     const buscandoProductoDb = await todosLosProductosDb.find(
         (producto) => producto.id == obteniendoId
     );
-    await carritoConstructor.save(buscandoProductoDb);
 
-    return;
+    const cargandoProducto = await carritoConstructor.save(buscandoProductoDb);
+
+    return cargandoProducto;
 });
-//probar en frontend
-// f5 por cada item elimnado
+
 rutaCarrito.delete('/:id', async (req, res) => {
     const { id } = req.params;
     let filtrandoProducto = carritoConstructor.deleteById(id);
@@ -224,8 +190,8 @@ rutaCarrito.delete('/:id', async (req, res) => {
         res.json({ success: true });
     }
 });
-//probar en frontend
-// f5 despues de vaciar el carrito
+
 rutaCarrito.delete('', async (req, res) => {
     await carritoConstructor.deleteAll();
+    res.json({ success: true });
 });
