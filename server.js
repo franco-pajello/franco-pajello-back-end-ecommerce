@@ -1,21 +1,33 @@
-const productos = require('./productosContenedor');
-const fs = require('fs');
-const data = './data/carrito.json';
+/* const fs = require('fs');
+const data = './data/carrito.json'; */
 const express = require('express');
 const multer = require('multer');
+
+const { options } = require("./options/mysql.js");
+const productos = require('./productosContenedor.js');
+const knexProductos = require("./constructorKnexProductos.js")
+const constructorKnexProductos = new knexProductos.productosKnex()
 const objeto = new productos.productos();
-const carrito = require('./contenedorCarrito');
+const carrito = require('./contenedorCarrito.js');
 const carritoConstructor = new carrito.carrito();
+const chatContenedor = require("./chatContenedor.js")
+const chatConstructor = new chatContenedor.Chat()
+
 const APP = express();
+const http = require("http").createServer(APP);
+const io = require("socket.io")(http);
 const PORT = process.env.PORT | 8080;
-const http = require('http').createServer(APP);
+
 const { Router } = express;
 const rutaBase = Router();
 const rutaCarrito = Router();
+
 const cors = require('cors');
+const knex = require("knex")(options);
+
 
 //ADMIN
-const admin = false;
+const admin = true;
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -57,8 +69,9 @@ APP.get('*', function (req, res) {
 });
 
 rutaBase.get('', async (req, res) => {
+    /*   res.sendFile(__dirname + "/index.html") */
     try {
-        let productosArray = await objeto.getAll();
+        let productosArray = await constructorKnexProductos.getAll();
         res.json({ productosArray, admin });
     } catch (err) {
         res.json({ error: err });
@@ -67,7 +80,8 @@ rutaBase.get('', async (req, res) => {
 
 rutaBase.get('/:id', async (req, res) => {
     const { id } = req.params;
-    let buscandoProducto = await objeto.getById(id);
+    let buscandoProducto = await constructorKnexProductos.getById(id);
+
     if (buscandoProducto == false) {
         res.json({ error: 400, msj: 'solicitud no encontrada' });
     } else {
@@ -85,9 +99,11 @@ APP.post(
         }
     },
     (req, res) => {
+
         const { body } = req;
-        objeto.save({ ...body, img: body.img });
-        res.send('ok');
+
+        constructorKnexProductos.save({ ...body, img_url: body.img_url });
+        /*    res.send('ok');  */
     }
 );
 
@@ -103,21 +119,29 @@ rutaBase.put(
     async (req, res) => {
         const { id } = req.params;
         const { body } = req;
-        let todosLosProductos = await objeto.getAll();
+        await knex
+            .from("productos")
+            .where("id", "=", `${id}`)
+            .update(body)
 
-        const indiceEncontrado = await todosLosProductos.findIndex(
-            (producto) => producto.id == id
-        );
+        res.json({ success: "producto editado con exito" })
 
-        todosLosProductos[indiceEncontrado] = body;
 
-        const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
-        let archivoFormatoJs = await JSON.parse(lecturaArchivo);
-        archivoFormatoJs = todosLosProductos;
-        let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
-        await fs.promises.writeFile('./data/data.json', archivoFormatoTxt);
 
-        res.send('ok');
+        /* 
+                const indiceEncontrado = await todosLosProductos.findIndex(
+                    (producto) => producto.id == id
+                );
+        
+                       todosLosProductos[indiceEncontrado] = body;
+                
+                        const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
+                        let archivoFormatoJs = await JSON.parse(lecturaArchivo);
+                        archivoFormatoJs = todosLosProductos;
+                        let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
+                        await fs.promises.writeFile('./data/data.json', archivoFormatoTxt); 
+        
+                res.send('ok'); */
     }
 );
 
@@ -144,13 +168,18 @@ rutaBase.delete(
     async (req, res) => {
         const { id } = req.params;
 
-        let filtrandoProducto = await objeto.deleteById(id);
 
-        if (filtrandoProducto == false) {
-            res.json({ error: 'producto no encontrado' });
-        } else {
-            res.json({ success: true });
-        }
+        await constructorKnexProductos.deleteById(id)
+
+        res.json({ success: "producto borrado con exito" })
+        /* 
+                let filtrandoProducto = await objeto.deleteById(id);
+        
+                if (filtrandoProducto == false) {
+                    res.json({ error: 'producto no encontrado' });
+                } else {
+                    res.json({ success: true });
+                } */
     }
 );
 
@@ -195,3 +224,12 @@ rutaCarrito.delete('', async (req, res) => {
     await carritoConstructor.deleteAll();
     res.json({ success: true });
 });
+
+
+/* io.on('connection', (Socket) => {
+    Socket.on('msg', async (data) => {
+        await chatConstructor.save(data);
+        const todoElChat = await chatConstructor.getAll();
+        io.sockets.emit('chatLista', todoElChat);
+    });
+});  */
