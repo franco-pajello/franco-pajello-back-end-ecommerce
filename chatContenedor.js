@@ -1,37 +1,51 @@
-const fs = require('fs');
-const data = './data/chat.json';
+const { options } = require("./options/sqlite3.js");
+const knex = require("knex")(options);
 
 class Chat {
     constructor(nombre) {
         this.nombre = nombre;
+        this.nombreTabla = "chat"
+        this.options = knex
     }
 
     async save(dataChat) {
+
+        console.log(dataChat)
+
         try {
-            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
+            await knex(`${this.nombreTabla}`)
+                .insert(dataChat)
+                .then(() => {
+                    console.log("chat insertado");
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
 
-            const archivoFormatoJs = JSON.parse(lecturaArchivo);
 
-            archivoFormatoJs.push(dataChat);
-
-            let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
-
-            await fs.promises.writeFile(data, archivoFormatoTxt);
-
-            return { success: true };
-        } catch (err) {
-            return { success: false, error: err }
+        } catch (e) {
+            console.log(e)
         }
+
+        return { success: true };
+
     }
     async getAll() {
         try {
-            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
+            const k = await knex
+                .from(`${this.nombreTabla}`)
+                .select("*")
 
-            const archivoFormatoJs = JSON.parse(lecturaArchivo);
+            if (k.length >= 0) {
+                return k
+            } else {
 
-            return archivoFormatoJs;
+                return [];
+            }
+
+
         } catch (err) {
-            return { success: false, error: err }
+            return { success: false, error: err };
         }
     }
 }

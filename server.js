@@ -1,9 +1,8 @@
-const productos = require('./productosContenedor');
-const chat = require('./chatContenedor');
 const express = require('express');
 const multer = require('multer');
-const { Socket } = require('socket.io');
+const productos = require('./productosContenedor');
 const objeto = new productos.productos();
+const chat = require('./chatContenedor.js');
 const chatConstructor = new chat.Chat();
 const APP = express();
 const PORT = process.env.PORT | 8080;
@@ -130,6 +129,7 @@ io.on('connection', (Socket) => {
     Socket.on('msg', async (data) => {
         await chatConstructor.save(data);
         const todoElChat = await chatConstructor.getAll();
+        console.log(todoElChat)
         io.sockets.emit('chatLista', todoElChat);
     });
 });
