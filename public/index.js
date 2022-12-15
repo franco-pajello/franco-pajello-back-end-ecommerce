@@ -1,52 +1,20 @@
-const socket = io();
-/* let html = '';
-
-function enviarMsg() {
-    const fechaActual = Date.now();
-    const fecha = new Date(fechaActual);
-    const fechaFormat = fecha.toLocaleString();
-
-    let msgUsuario = {
-        fecha: fechaFormat,
-        email: document.getElementById('email').value,
-        msg: document.getElementById('textArea').value,
-    };
-
-    socket.emit('msg', msgUsuario);
-}
-
-socket.on('chatLista', async (data) => {
-    await data.forEach((data) => {
-        html += `
-              <div>
-                <p>${data.email} ${data.fecha} dijo: ${data.msg}</p>
-              </div>`;
-    });
-
-    document.getElementById('chatLista').innerHTML = html;
-
-    document.getElementById('textArea').value = '';
-}); */
-
 //metodo get de
 (() => {
     try {
         fetch('http://localhost:8080/api/productos ')
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((data) => {
-
                 const array = data.productosArray;
                 if (array.length > 0) {
-
                     let productosId = document.getElementById('productos');
                     array.forEach((produc) => {
-
                         productosId.innerHTML += `     <div id="productos">
                     <div > 
                     <ul>
-                    <li id="productoValue${produc.id}" > ${produc.producto
-                            }</li>
-                    <li><img id="imgValue${produc.id}" src=${produc.img_url} alt="5" /></li>
+                    <li id="productoValue${produc.id}" > <p>${produc.producto
+                            }</p></li>
+                    <li><img id="imgValue${produc.id}" src=" ${produc.img
+                            } " alt="#" /></li>
                     <li><p>aaa a aaaaaaaaaaaa aaaa aaaaaaaa aaaaaaa</p></li>
                     <li id="stockValue${produc.id}"> ${produc.stock} </li>
                     <li  id="precioValue${produc.id}"> ${produc.precio} </li>
@@ -63,29 +31,29 @@ socket.on('chatLista', async (data) => {
                             </div>
                             </div>`;
                     });
-
                 }
+
                 let form = document.getElementById('form');
                 if (data.admin) {
                     form.innerHTML += `     <label for="producto ">producto</label>
-                                        <input id="productoId" type="text" name="producto" required />
-                                        <br />
-                                        <label for="precio ">precio</label>
-                                        <input type="text" id="precioId" name="precio" required />
-                                        <br />
-                                        <label for="stock ">stock</label>
-                                        <input type="text" id="stockId" name="stock" required />
-                                        <br />
-                                        <label for="myFile">img url</label>
-                                        <input type="url" id="myFileId" name="myFile" required />
-                                        <br />
-                                        <div>
-                                        <div>
-                                        <input type="submit" value="cargar un producto"  onclick="cargarProductoDb(); return false"/>
-                                        <button  id="actualizar" value="" onclick="actualizarProducto(value); return false">aztualizar</button> 
-                                        </div>
-                                        </div>
-                                        <br />`;
+                        <input id="productoId" type="text" name="producto" required />
+                        <br />
+                        <label for="precio ">precio</label>
+                        <input type="text" id="precioId" name="precio" required />
+                        <br />
+                        <label for="stock ">stock</label>
+                        <input type="text" id="stockId" name="stock" required />
+                        <br />
+                        <label for="myFile">img url</label>
+                        <input type="url" id="myFileId" name="myFile" required />
+                        <br />
+                        <div>
+                        <div>
+                        <input type="submit" value="cargar un producto"  onclick="cargarProductoDb(); return false"/>
+                        <button  id="actualizar" value="" onclick="actualizarProducto(value); return false">aztualizar</button> 
+                        </div>
+                        </div>
+                        <br />`;
                 }
             })
             .catch((err) => console.log(err));
@@ -102,7 +70,7 @@ async function cargarProductoDb() {
             body: JSON.stringify({
                 producto: document.getElementById('productoId').value,
                 precio: document.getElementById('precioId').value,
-                img_url: document.getElementById('myFileId').value,
+                img: document.getElementById('myFileId').value,
                 stock: document.getElementById('stockId').value,
                 cantidad: 0,
             }),
@@ -141,7 +109,7 @@ async function actualizarProducto(id) {
                     producto: document.getElementById(`productoId`).value,
                     precio: document.getElementById(`precioId`).value,
                     stock: document.getElementById(`stockId`).value,
-                    img_url: document.getElementById(`myFileId`).value,
+                    img: document.getElementById(`myFileId`).value,
                 }),
             };
             await fetch(`http://localhost:8080/api/productos/${id}`, options)
@@ -181,13 +149,13 @@ async function EliminarProducto(id) {
 }
 
 //metodo GET del carrito
-/* (async () => {
+(async () => {
     try {
         await fetch('http://localhost:8080/api/carrito')
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((data) => {
                 const carrito = document.getElementById('carrito');
- 
+
                 if (data.length > 0) {
                     data.forEach((elemento) => {
                         carrito.innerHTML += `<div>
@@ -219,7 +187,7 @@ async function EliminarProducto(id) {
         console.log(e);
     }
 })();
- */
+
 async function cargarProductoCarrito(a) {
     try {
         let options = {
