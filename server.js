@@ -1,36 +1,10 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-/* <<<<<<< HEAD */
-/* const fs = require('fs');
-const data = './data/carrito.json'; */
-/* const express = require('express');
-=======
-const productos = require('./productosContenedor');
-const fs = require('fs');
-const data = './data/carrito.json';
-const express = require('express');
->>>>>>> parent of f81f15b (chat en sqlit incompleto)
-const multer = require('multer');
-const objeto = new productos.productos();
-const carrito = require('./contenedorCarrito');
-const carritoConstructor = new carrito.carrito();
-<<<<<<< HEAD
-const chatContenedor = require("./chatContenedor.js")
-const chatConstructor = new chatContenedor.Chat()
-
-======= */
-=======
 const productos = require('./productosContenedor');
 const chat = require('./chatContenedor');
->>>>>>> parent of 784ae0d (socket.io con sqlite3)
 const express = require('express');
 const multer = require('multer');
 const { Socket } = require('socket.io');
 const objeto = new productos.productos();
 const chatConstructor = new chat.Chat();
-/* >>>>>>> 784ae0d */
-=======
->>>>>>> parent of f81f15b (chat en sqlit incompleto)
 const APP = express();
 const PORT = process.env.PORT | 8080;
 const http = require('http').createServer(APP);

@@ -8,7 +8,6 @@ class Chat {
 
     async save(dataChat) {
         try {
-<<<<<<< HEAD
             await knex(`${this.nombreTabla}`)
                 .insert(dataChat)
                 .then(() => {
@@ -19,22 +18,21 @@ class Chat {
                 })
         } catch (e) {
             console.log(e)
-
-=======
-            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
-
-            const archivoFormatoJs = JSON.parse(lecturaArchivo);
-
-            archivoFormatoJs.push(dataChat);
-
-            let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
-
-            await fs.promises.writeFile(data, archivoFormatoTxt);
-
-            return { success: true };
-        } catch (err) {
-            return { success: false, error: err }
->>>>>>> parent of 784ae0d (socket.io con sqlite3)
+            /*             const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
+            
+                        const archivoFormatoJs = JSON.parse(lecturaArchivo);
+            
+                        archivoFormatoJs.push(dataChat);
+            
+                        let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
+            
+                        await fs.promises.writeFile(data, archivoFormatoTxt);
+            
+                        return { success: true };
+                    } catch (err) {
+                        return { success: false, error: err }
+            
+                        */
         }
     }
     async getAll() {
