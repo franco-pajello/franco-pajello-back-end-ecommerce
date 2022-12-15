@@ -1,7 +1,7 @@
-<<<<<<< HEAD
+/* <<<<<<< HEAD */
 /* const fs = require('fs');
 const data = './data/carrito.json'; */
-const express = require('express');
+/* const express = require('express');
 const multer = require('multer');
 
 const { options } = require("./options/mysql.js");
@@ -14,14 +14,14 @@ const carritoConstructor = new carrito.carrito();
 const chatContenedor = require("./chatContenedor.js")
 const chatConstructor = new chatContenedor.Chat()
 
-=======
+======= */
 const express = require('express');
 const multer = require('multer');
 const productos = require('./productosContenedor');
 const objeto = new productos.productos();
 const chat = require('./chatContenedor.js');
 const chatConstructor = new chat.Chat();
->>>>>>> 784ae0d
+/* >>>>>>> 784ae0d */
 const APP = express();
 const http = require("http").createServer(APP);
 const io = require("socket.io")(http);
