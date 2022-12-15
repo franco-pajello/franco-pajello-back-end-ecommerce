@@ -9,7 +9,7 @@ function enviarMsg() {
     let msgUsuario = {
         fecha: fechaFormat,
         email: document.getElementById('email').value,
-        msj: document.getElementById('textArea').value,
+        msg: document.getElementById('textArea').value,
     };
 
     socket.emit('msg', msgUsuario);
@@ -17,13 +17,13 @@ function enviarMsg() {
 
 socket.on('chatLista', async (data) => {
     await data.forEach((data) => {
-        html = `
+        html += `
               <div>
-                <p>${data.email} ${data.fecha} dijo: ${data.msj}</p>
+                <p>${data.email} ${data.fecha} dijo: ${data.msg}</p>
               </div>`;
     });
 
-    document.getElementById('chatLista').innerHTML += html;
+    document.getElementById('chatLista').innerHTML = html;
 
     document.getElementById('textArea').value = '';
 }); */

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* <<<<<<< HEAD */
 /* const fs = require('fs');
 const data = './data/carrito.json'; */
@@ -15,11 +16,14 @@ const chatContenedor = require("./chatContenedor.js")
 const chatConstructor = new chatContenedor.Chat()
 
 ======= */
+=======
+const productos = require('./productosContenedor');
+const chat = require('./chatContenedor');
+>>>>>>> parent of 784ae0d (socket.io con sqlite3)
 const express = require('express');
 const multer = require('multer');
-const productos = require('./productosContenedor');
+const { Socket } = require('socket.io');
 const objeto = new productos.productos();
-const chat = require('./chatContenedor.js');
 const chatConstructor = new chat.Chat();
 /* >>>>>>> 784ae0d */
 const APP = express();
@@ -239,7 +243,6 @@ rutaCarrito.delete('', async (req, res) => {
     Socket.on('msg', async (data) => {
         await chatConstructor.save(data);
         const todoElChat = await chatConstructor.getAll();
-        console.log(todoElChat)
         io.sockets.emit('chatLista', todoElChat);
     });
 });  */
