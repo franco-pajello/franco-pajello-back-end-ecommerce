@@ -22,6 +22,7 @@ class Contenedor {
         this.schema = model(schema, modeloDelProducto)
 
     }
+
     async getAll() {
         connectMG()
         try {
@@ -31,6 +32,7 @@ class Contenedor {
             return { success: false, error: err };
         }
     }
+
     async getById(id) {
         try {
             const TraerTodo = await this.schema.findById({ _id: `${id}` })
@@ -100,6 +102,7 @@ class Contenedor {
             return { error: true, msg: "no pudimos borra el producto" };
         }
     }
+
     async upDateById(id, body) {
         console.log(id, body)
         console.log(id, body.producto)
@@ -114,24 +117,5 @@ class Contenedor {
             }
         })
     }
-    async post(produc) {
-        try {
-
-            const nuevoElemento = new this.schema({
-                producto: produc._doc.producto,
-                precio: produc._doc.precio,
-                img_url: produc._doc.img_url,
-                stock: produc._doc.stock,
-                cantidad: 1
-            })
-            await nuevoElemento.save()
-            return { success: true };
-
-        } catch (err) {
-            return { success: false, error: err };
-        }
-
-    }
-
 }
 module.exports = { Contenedor }; 
