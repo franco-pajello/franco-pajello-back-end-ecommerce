@@ -1,7 +1,70 @@
-const fs = require('fs');
+const contenedorRequire = require('../../contenedores/contenedorArchivos.js');
 const data = './data/carrito.json';
+const fs = require("fs")
 
-class carrito {
+class carrito extends contenedorRequire.Contenedor {
+    constructor() {
+        super(data)
+    }
+
+    async post(obj) {
+
+
+        try {
+
+            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
+
+            const archivoFormatoJs = await JSON.parse(lecturaArchivo);
+
+
+            const buscandoProductoCarrito = await archivoFormatoJs.findIndex(
+                (producto) => producto.id == obj.id
+            );
+
+            if (buscandoProductoCarrito < 0) {
+                obj.cantidad = 1;
+                await archivoFormatoJs.push(obj);
+                console.log(archivoFormatoJs)
+
+                const archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
+                await fs.promises.writeFile(this.ruta, archivoFormatoTxt);
+                return archivoFormatoJs;
+            } else {
+                archivoFormatoJs[buscandoProductoCarrito].cantidad++;
+                console.log(archivoFormatoJs[buscandoProductoCarrito].cantidad++);
+                let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
+                await fs.promises.writeFile(this.ruta, archivoFormatoTxt);
+                return archivoFormatoJs;
+            }
+        } catch (err) {
+            return { success: false, error: err };
+        }
+    }
+}
+
+const carritoConstructor = new carrito();
+
+module.exports = { carrito };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* class carrito {
     constructor(nombre) {
         this.nombre = nombre;
     }
@@ -24,6 +87,7 @@ class carrito {
                 return archivoFormatoJs;
             } else {
                 archivoFormatoJs[buscandoProductoCarrito].cantidad++;
+                console.log(archivoFormatoJs[buscandoProductoCarrito].cantidad++);
                 let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
                 await fs.promises.writeFile(data, archivoFormatoTxt);
                 return archivoFormatoJs;
@@ -39,6 +103,22 @@ class carrito {
             const archivoFormatoJs = JSON.parse(lecturaArchivo);
 
             return archivoFormatoJs;
+        } catch (err) {
+            return { success: false, error: err };
+        }
+    }
+    async getById(id) {
+        try {
+            const lecturaArchivo = await fs.promises.readFile(data, 'utf-8');
+
+            const archivoFormatoJs = JSON.parse(lecturaArchivo);
+
+            let buscandoId = await archivoFormatoJs.filter((e) => e.id == id);
+
+            if (buscandoId === []) {
+                console.log('hola');
+            }
+            return buscandoId;
         } catch (err) {
             return { success: false, error: err };
         }
@@ -98,3 +178,4 @@ class carrito {
 const carritoConstructor = new carrito();
 
 module.exports = { carrito };
+ */
