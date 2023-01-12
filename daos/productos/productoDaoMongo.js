@@ -1,9 +1,8 @@
-const productoRequire = require("../../contenedores/contenedorMongo.js")
+const productoRequire = require('../../contenedores/contenedorMongo.js');
+let modelo = require('../../models/productos.js').modeloDelProducto;
 class ProductoDaosMongo extends productoRequire.Contenedor {
     constructor() {
-        super("productos")
+        super('productos', modelo);
     }
 }
 module.exports = { ProductoDaosMongo };
-
-

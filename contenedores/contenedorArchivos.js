@@ -20,7 +20,7 @@ class Contenedor {
         try {
             const archivoFormatoJs = await this.getAll();
 
-            let buscandoId = archivoFormatoJs.find((e) => (e.id == id));
+            let buscandoId = archivoFormatoJs.find((e) => e.id == id);
 
             return buscandoId;
         } catch (err) {
@@ -30,10 +30,8 @@ class Contenedor {
 
     async save(obj) {
         try {
-
+            console.log(obj);
             const archivoFormatoJs = await this.getAll();
-
-
             if (archivoFormatoJs.length == 0) {
                 obj.id = 1;
                 archivoFormatoJs.push(obj);
@@ -65,7 +63,6 @@ class Contenedor {
 
     async deleteAll() {
         try {
-
             const archivoFormatoJs = await this.getAll();
             archivoFormatoJs = [];
             let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
@@ -77,7 +74,6 @@ class Contenedor {
     }
     async deleteById(id) {
         try {
-
             const archivoFormatoJs = await this.getAll();
 
             const buscamosElementoId = await archivoFormatoJs.find((e) => e.id == id);
@@ -96,7 +92,6 @@ class Contenedor {
         }
     }
     async upDateById(id, body) {
-
         let todosLosProductos = await this.getAll();
 
         const indiceEncontrado = await todosLosProductos.findIndex(
@@ -111,7 +106,7 @@ class Contenedor {
         let archivoFormatoTxt = JSON.stringify(archivoFormatoJs);
         await fs.promises.writeFile(this.ruta, archivoFormatoTxt);
 
-        return { success: true }
+        return { success: true };
     }
 }
 

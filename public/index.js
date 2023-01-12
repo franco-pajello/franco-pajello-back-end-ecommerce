@@ -1,39 +1,101 @@
+const socket = io();
+let html;
+async function agregarPoductosFaker() {
+    try {
+        let id = 5;
+        let options = {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            body: JSON.stringify({ id }),
+        };
+        await fetch('http://localhost:8080/productosFaker', options)
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+            .catch((e) => {
+                console.log(e);
+            });
+    } catch (e) {
+        console.log(e);
+    }
+}
+function enviarMsg() {
+    const fechaActual = Date.now();
+    const fecha = new Date(fechaActual);
+    const fechaFormat = fecha.toLocaleString();
+
+    let msgUsuario = {
+        id: document.getElementById('email').value,
+        autor: {
+            email: document.getElementById('email').value,
+            edad: document.getElementById('edad').value,
+            nombre: document.getElementById('nombre').value,
+        },
+        fecha: fechaFormat,
+        msg: document.getElementById('textArea').value,
+    };
+
+    if (!msgUsuario.msg) {
+        msgUsuario.msg = document.getElementById('textArea').value = '';
+        return (document.getElementById('textArea').placeholder =
+            'escribir un aquí');
+    } else {
+        socket.emit('msg', msgUsuario);
+    }
+}
+
+socket.on('chatLista', async (data) => {
+    await data.forEach((msgData) => {
+        html = `
+        <div>
+        <p>${msgData.autor.email} ${msgData.fecha} dijo: ${msgData.msg}</p>
+      </div>`;
+    });
+    document.getElementById('chatLista').innerHTML += html;
+
+    document.getElementById('textArea').value = '';
+});
+
 //metodo get de home
+
 (() => {
     try {
         fetch('http://localhost:8080/api/productos ')
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((data) => {
                 const array = data.productosArray;
+                console.log(array);
                 if (array.length > 0) {
                     let productosId = document.getElementById('productos');
                     array.forEach((produc) => {
                         productosId.innerHTML += `     <div id="productos">
                     <div > 
                     <ul>
-                    <li id="productoValue${produc.id ? produc.id : produc._id}" > <p>${produc.producto
-                            }</p></li>
-                     <li><img id="imgValue${produc.id ? produc.id : produc._id}" src=" ${produc.img_url
-                            } " alt="#" /></li>
+                    <li id="productoValue${produc.id ? produc.id : produc._id
+                            }" > <p>${produc.producto}</p></li>
+                     <li><img id="imgValue${produc.id ? produc.id : produc._id
+                            }" src=" ${produc.img_url} " alt="#" /></li>
                     <li><p>aaa a aaaaaaaaaaaa aaaa aaaaaaaa aaaaaaa</p></li>
-                    <li id="stockValue${produc.id ? produc.id : produc._id}"> ${produc.stock} </li>
-                    <li  id="precioValue${produc.id ? produc.id : produc._id}"> ${produc.precio} </li>
+                    <li id="stockValue${produc.id ? produc.id : produc._id}"> ${produc.stock
+                            } </li>
+                    <li  id="precioValue${produc.id ? produc.id : produc._id
+                            }"> ${produc.precio} </li>
                     ${data.admin
                                 ? `<div>
-                        <button  id="btn-actualizar${produc.id ? produc.id : produc._id}"  onclick=enviarProductoAlForm("${produc.id ? produc.id : produc._id}")>actualizar </button>
-                        <button onclick=EliminarProducto("${produc.id ? produc.id : produc._id}") >Eliminar</button>
+                        <button  id="btn-actualizar${produc.id ? produc.id : produc._id
+                                }"  onclick=enviarProductoAlForm("${produc.id ? produc.id : produc._id
+                                }")>actualizar </button>
+                        <button onclick=EliminarProducto("${produc.id ? produc.id : produc._id
+                                }") >Eliminar</button>
                         </div>`
                                 : `<div>
-                                <button onclick=cargarProductoCarrito("${produc.id ? produc.id : produc._id}") >agregar al carrito</button>
+                                <button onclick=cargarProductoCarrito("${produc.id ? produc.id : produc._id
+                                }") >agregar al carrito</button>
                                 </div>`
                             }
                             </ul> 
                             </div>
                             </div>`;
-                    }
-                    );
+                    });
                 }
-
 
                 let form = document.getElementById('form');
                 if (data.admin) {
@@ -86,7 +148,7 @@ async function cargarProductoDb() {
 }
 
 const enviarProductoAlForm = (id) => {
-    console.log(id)
+    console.log(id);
     try {
         let productoId = (document.getElementById(`productoId`).value =
             document.getElementById(`productoValue${id}`).textContent);
@@ -100,7 +162,7 @@ const enviarProductoAlForm = (id) => {
     } catch (e) {
         console.log(e);
     }
-}
+};
 
 async function actualizarProducto(id) {
     try {
@@ -123,7 +185,7 @@ async function actualizarProducto(id) {
                     (document.getElementById(`stockId`).value = ''),
                     (document.getElementById(`myFileId`).value = '')
                 )
-                .catch((err) => console.log(err))
+                .catch((err) => console.log(err));
         } else {
             (document.getElementById(`productoId`).value = 'producto no valido'),
                 (document.getElementById(`precioId`).value = ''),
@@ -157,7 +219,6 @@ async function EliminarProducto(id) {
         await fetch('http://localhost:8080/api/carrito')
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((data) => {
-                console.log(data)
                 const carrito = document.getElementById('carrito');
                 if (data.length > 0) {
                     data.forEach((elemento) => {
@@ -171,7 +232,8 @@ async function EliminarProducto(id) {
                     <li>cantidad: ${elemento.cantidad}</li>
                     <button>+</button>
                     <button>-</button>
-                    <button onclick=eliminarItemCarrito("${elemento.id ? elemento.id : elemento._id}")>eliminar</button>
+                    <button onclick=eliminarItemCarrito("${elemento.id ? elemento.id : elemento._id
+                            }")>eliminar</button>
                     </ul>
                     </div>
                     </div>
@@ -199,9 +261,7 @@ async function cargarProductoCarrito(id) {
             body: JSON.stringify({ id }),
         };
         await fetch('http://localhost:8080/api/carrito', options)
-            .then((res) =>
-                res.ok ? res.json() : Promise.reject(res)
-            )
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .catch((e) => {
                 console.log(e);
             });
@@ -215,7 +275,7 @@ async function eliminarItemCarrito(value) {
             method: 'DELETE',
             headers: { 'Content-type': 'application/json; charset=utf-8 ' },
         };
-        console.log(value)
+        console.log(value);
         await fetch(`http://localhost:8080/api/carrito/${value}`, options)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .catch((e) => console.log(e));
@@ -236,4 +296,3 @@ async function vaciarCarrito() {
         console.log(e);
     }
 }
-

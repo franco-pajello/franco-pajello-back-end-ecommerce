@@ -1,8 +1,8 @@
-const PoductosRequire = require("../../contenedores/contenedorFirebase.js")
+const PoductosRequire = require('../../contenedores/contenedorFirebase.js');
 
 class PoductosDaosFirebase extends PoductosRequire.Contenedor {
     constructor() {
-        super("poductos")
+        super('poductos');
     }
 }
 
