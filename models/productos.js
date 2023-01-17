@@ -1,4 +1,3 @@
-const { tr } = require('faker/lib/locales');
 const { Schema } = require('mongoose');
 const modeloDelProducto = new Schema({
     producto: { type: String, require: true },

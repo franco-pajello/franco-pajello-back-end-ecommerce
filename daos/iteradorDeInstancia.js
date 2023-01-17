@@ -11,10 +11,16 @@ const carritoDaoFirebase =
     require('./carrito/carritoDaoFirebase.js').CarritoDaosFirebase;
 const chatDaoArchivo = require('./chat/chatArchivo.js').chatDaosArchivo;
 const chatDaoMongo = require('./chat/chatDaoMongo.js').chatDaosMongo;
+const sessionesMongoAtlas = require('./sessions/sessionMongoAtlas.js').session;
 const { config } = require('dotenv');
 config();
 
 const instancias = [
+    {
+        nombre: sessionesMongoAtlas,
+        id: 'mongo',
+        descripcion: 'sesion',
+    },
     {
         nombre: ProductosDaoArchivos,
         id: 'archivo',
@@ -62,6 +68,7 @@ const resultado = {
     [instancia[0].descripcion]: instancia[0].nombre,
     [instancia[1].descripcion]: instancia[1].nombre,
     [instancia[2].descripcion]: instancia[2].nombre,
+    [instancia[3].descripcion]: instancia[3].nombre,
 };
 
 module.exports = { resultado };

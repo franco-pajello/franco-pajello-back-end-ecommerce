@@ -1,5 +1,35 @@
 const socket = io();
 let html;
+
+async function login() {
+    try {
+        let options = {
+            method: 'post',
+            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            body: JSON.stringify({
+                nombre: document.getElementById('nombreId').value,
+            }),
+        };
+        await fetch('http://localhost:8080/login', options)
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+            .catch((err) => console.log(err));
+    } catch (e) {
+        console.log(e);
+    }
+}
+async function logout() {
+    try {
+        let options = {
+            method: 'post',
+            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+        };
+        await fetch('http://localhost:8080/logout', options)
+            .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+            .catch((err) => console.log(err));
+    } catch (e) {
+        console.log(e);
+    }
+}
 async function agregarPoductosFaker() {
     try {
         let id = 5;
@@ -56,9 +86,9 @@ socket.on('chatLista', async (data) => {
 
 //metodo get de home
 
-(() => {
+/* (() => {
     try {
-        fetch('http://localhost:8080/api/productos ')
+        fetch('http://localhost:8080/api/productos')
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .then((data) => {
                 const array = data.productosArray;
@@ -124,7 +154,7 @@ socket.on('chatLista', async (data) => {
     } catch (e) {
         console.log(e);
     }
-})();
+})(); */
 
 async function cargarProductoDb() {
     try {
@@ -214,7 +244,7 @@ async function EliminarProducto(id) {
 }
 
 //metodo GET del carrito
-(async () => {
+/* (async () => {
     try {
         await fetch('http://localhost:8080/api/carrito')
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
@@ -251,7 +281,7 @@ async function EliminarProducto(id) {
     } catch (e) {
         console.log(e);
     }
-})();
+})(); */
 
 async function cargarProductoCarrito(id) {
     try {

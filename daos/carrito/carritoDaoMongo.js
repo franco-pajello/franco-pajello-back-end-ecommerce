@@ -1,24 +1,18 @@
 const carritoRequire = require('../../contenedores/contenedorMongo.js');
 let modelo = require('../../models/carrito.js').modeloDelcarrito;
+async function nuevoElemento(elemento) {
+    const nuevoElemento = new this.schema({
+        producto: elemento._doc.producto,
+        precio: elemento._doc.precio,
+        img_url: elemento._doc.img_url,
+        stock: elemento._doc.stock,
+        cantidad: 1,
+    });
+    await nuevoElemento.save();
+}
 class CarritoDaosMongo extends carritoRequire.Contenedor {
     constructor() {
-        super('carrito', modelo);
-    }
-    async post(produc) {
-        try {
-            const nuevoElemento = new this.schema({
-                producto: produc._doc.producto,
-                precio: produc._doc.precio,
-                img_url: produc._doc.img_url,
-                stock: produc._doc.stock,
-                cantidad: 1,
-            });
-            await nuevoElemento.save();
-            return { success: true };
-        } catch (err) {
-            return { success: false, error: err };
-        }
+        super('carrito', modelo, nuevoElemento);
     }
 }
-
 module.exports = { CarritoDaosMongo };

@@ -2,9 +2,12 @@ const { model, connect } = require('mongoose');
 
 async function connectMG() {
     try {
-        await connect('mongodb://127.0.0.1:27017/ecommerce', {
-            useNewUrlParser: true,
-        });
+        await connect(
+            'mongodb+srv://franco-pajello:tJ7LmKYYZwptLS9G@cluster0.8t2nx9j.mongodb.net/ecommerce  ',
+            {
+                useNewUrlParser: true,
+            }
+        );
     } catch (e) {
         console.log(e);
         throw 'no me conecte';
@@ -12,8 +15,9 @@ async function connectMG() {
 }
 
 class Contenedor {
-    constructor(schema, modelo) {
+    constructor(schema, modelo, nuevoElemento) {
         this.modelo = modelo;
+        this.nuevoElemento = nuevoElemento;
         this.schema = model(schema, modelo);
     }
 
@@ -36,17 +40,19 @@ class Contenedor {
             return { error: true, msg: err };
         }
     }
-
-    async save(produc) {
+    async getByOne(id) {
         try {
-            const nuevoElemento = new this.schema({
-                producto: produc.producto,
-                precio: produc.precio,
-                img_url: produc.img_url,
-                stock: produc.stock,
-                cantidad: 1,
-            });
-            await nuevoElemento.save();
+            const TraerUno = await this.schema.findOne(id);
+            return TraerUno;
+        } catch (err) {
+            return { error: true, msg: err };
+        }
+    }
+
+    async save(elemento) {
+        console.log(elemento);
+        try {
+            this.nuevoElemento(elemento);
             return { success: true };
         } catch (err) {
             return { success: false, error: err };

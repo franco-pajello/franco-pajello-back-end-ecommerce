@@ -1,0 +1,21 @@
+<% if(usuarios) {%>
+<h2>BIENVENIDO</h2>
+<form onsubmit="logout(); return false;">
+  <input type="submit" value="logout" />
+</form>
+
+<% }else{ %>
+<form onsubmit="login(); return false;">
+  <label for="nombre ">nombre</label>
+  <input
+    id="nombreId"
+    type="text"
+    name="nombre"
+    placeholder="ingrese su nombre"
+    required
+  />
+  <br />
+  <input type="submit" value="LOGIN" />
+  <br />
+</form>
+<%}%>
