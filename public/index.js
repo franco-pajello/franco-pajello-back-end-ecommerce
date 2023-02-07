@@ -4,13 +4,13 @@ let html;
 async function login() {
     try {
         let options = {
-            method: 'post',
-            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            method: "post",
+            headers: { "Content-type": "application/json; charset=utf-8 " },
             body: JSON.stringify({
-                nombre: document.getElementById('nombreId').value,
+                nombre: document.getElementById("nombreId").value,
             }),
         };
-        await fetch('http://localhost:8080/login', options)
+        await fetch("http://localhost:8080/api/productos/login", options)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .catch((err) => console.log(err));
     } catch (e) {
@@ -20,10 +20,10 @@ async function login() {
 async function logout() {
     try {
         let options = {
-            method: 'post',
-            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            method: "post",
+            headers: { "Content-type": "application/json; charset=utf-8 " },
         };
-        await fetch('http://localhost:8080/logout', options)
+        await fetch("http://localhost:8080/api/productos/logout", options)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .catch((err) => console.log(err));
     } catch (e) {
@@ -34,11 +34,11 @@ async function agregarPoductosFaker() {
     try {
         let id = 5;
         let options = {
-            method: 'POST',
-            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            method: "POST",
+            headers: { "Content-type": "application/json; charset=utf-8 " },
             body: JSON.stringify({ id }),
         };
-        await fetch('http://localhost:8080/productosFaker', options)
+        await fetch("http://localhost:8080/api/productos/productosFaker", options)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .catch((e) => {
                 console.log(e);
@@ -51,37 +51,37 @@ function enviarMsg() {
     const fechaActual = Date.now();
     const fecha = new Date(fechaActual);
     const fechaFormat = fecha.toLocaleString();
-
     let msgUsuario = {
-        id: document.getElementById('email').value,
+        id: document.getElementById("email").value,
         autor: {
-            email: document.getElementById('email').value,
-            edad: document.getElementById('edad').value,
-            nombre: document.getElementById('nombre').value,
+            id: document.getElementById("email").value,
+            email: document.getElementById("email").value,
+            nombre: document.getElementById("nombre").value,
+            edad: document.getElementById("edad").value,
         },
         fecha: fechaFormat,
-        msg: document.getElementById('textArea').value,
+        msgs: document.getElementById("textArea").value,
     };
 
-    if (!msgUsuario.msg) {
-        msgUsuario.msg = document.getElementById('textArea').value = '';
-        return (document.getElementById('textArea').placeholder =
-            'escribir un aquí');
+    if (!msgUsuario.msgs) {
+        msgUsuario.msgs = document.getElementById("textArea").value = "";
+        return (document.getElementById("textArea").placeholder =
+            "escribir un aquí");
     } else {
-        socket.emit('msg', msgUsuario);
+        socket.emit("msg", msgUsuario);
     }
 }
 
-socket.on('chatLista', async (data) => {
+socket.on("chatLista", async (data) => {
     await data.forEach((msgData) => {
-        html = `
+        html += `
         <div>
-        <p>${msgData.autor.email} ${msgData.fecha} dijo: ${msgData.msg}</p>
+        <p>${msgData.autor.email} ${msgData.fecha} dijo: ${msgData.msgs}</p>
       </div>`;
     });
-    document.getElementById('chatLista').innerHTML += html;
+    document.getElementById("chatLista").innerHTML += html;
 
-    document.getElementById('textArea').value = '';
+    document.getElementById("textArea").value = "";
 });
 
 //metodo get de home
@@ -159,17 +159,17 @@ socket.on('chatLista', async (data) => {
 async function cargarProductoDb() {
     try {
         let options = {
-            method: 'POST',
-            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            method: "POST",
+            headers: { "Content-type": "application/json; charset=utf-8 " },
             body: JSON.stringify({
-                producto: document.getElementById('productoId').value,
-                precio: document.getElementById('precioId').value,
-                img_url: document.getElementById('myFileId').value,
-                stock: document.getElementById('stockId').value,
+                producto: document.getElementById("productoId").value,
+                precio: document.getElementById("precioId").value,
+                img_url: document.getElementById("myFileId").value,
+                stock: document.getElementById("stockId").value,
                 cantidad: 1,
             }),
         };
-        await fetch('http://localhost:8080/uploadfile', options)
+        await fetch("http://localhost:8080/api/productos/uploadfile", options)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .catch((err) => console.log(err));
     } catch (e) {
@@ -198,8 +198,8 @@ async function actualizarProducto(id) {
     try {
         if (id) {
             let options = {
-                method: 'PUT',
-                headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+                method: "PUT",
+                headers: { "Content-type": "application/json; charset=utf-8 " },
                 body: JSON.stringify({
                     producto: document.getElementById(`productoId`).value,
                     precio: document.getElementById(`precioId`).value,
@@ -210,17 +210,17 @@ async function actualizarProducto(id) {
             await fetch(`http://localhost:8080/api/productos/${id}`, options)
                 .then((res) => (res.ok ? res.json() : Promise.reject(res)))
                 .then(
-                    (document.getElementById(`productoId`).value = ''),
-                    (document.getElementById(`precioId`).value = ''),
-                    (document.getElementById(`stockId`).value = ''),
-                    (document.getElementById(`myFileId`).value = '')
+                    (document.getElementById(`productoId`).value = ""),
+                    (document.getElementById(`precioId`).value = ""),
+                    (document.getElementById(`stockId`).value = ""),
+                    (document.getElementById(`myFileId`).value = "")
                 )
                 .catch((err) => console.log(err));
         } else {
-            (document.getElementById(`productoId`).value = 'producto no valido'),
-                (document.getElementById(`precioId`).value = ''),
-                (document.getElementById(`stockId`).value = ''),
-                (document.getElementById(`myFileId`).value = '');
+            (document.getElementById(`productoId`).value = "producto no valido"),
+                (document.getElementById(`precioId`).value = ""),
+                (document.getElementById(`stockId`).value = ""),
+                (document.getElementById(`myFileId`).value = "");
         }
     } catch (e) {
         console.log(e);
@@ -230,8 +230,8 @@ async function actualizarProducto(id) {
 async function EliminarProducto(id) {
     try {
         let options = {
-            method: 'DELETE',
-            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            method: "DELETE",
+            headers: { "Content-type": "application/json; charset=utf-8 " },
         };
         await fetch(`http://localhost:8080/api/productos/${id}`, options)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
@@ -286,11 +286,11 @@ async function EliminarProducto(id) {
 async function cargarProductoCarrito(id) {
     try {
         let options = {
-            method: 'POST',
-            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            method: "POST",
+            headers: { "Content-type": "application/json; charset=utf-8 " },
             body: JSON.stringify({ id }),
         };
-        await fetch('http://localhost:8080/api/carrito', options)
+        await fetch("http://localhost:8080/api/carrito", options)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
             .catch((e) => {
                 console.log(e);
@@ -302,8 +302,8 @@ async function cargarProductoCarrito(id) {
 async function eliminarItemCarrito(value) {
     try {
         let options = {
-            method: 'DELETE',
-            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            method: "DELETE",
+            headers: { "Content-type": "application/json; charset=utf-8 " },
         };
         console.log(value);
         await fetch(`http://localhost:8080/api/carrito/${value}`, options)
@@ -316,8 +316,8 @@ async function eliminarItemCarrito(value) {
 async function vaciarCarrito() {
     try {
         let options = {
-            method: 'DELETE',
-            headers: { 'Content-type': 'application/json; charset=utf-8 ' },
+            method: "DELETE",
+            headers: { "Content-type": "application/json; charset=utf-8 " },
         };
         await fetch(`http://localhost:8080/api/carrito`, options)
             .then((res) => (res.ok ? res.json() : Promise.reject(res)))
