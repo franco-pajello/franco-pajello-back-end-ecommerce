@@ -3,7 +3,6 @@ const { resultado } = require('./daos/iteradorDeInstancia.js');
 const carritoConstructor = new resultado.carrito();
 const objeto = new resultado.producto();
 const chat = new resultado.chat();
-const sesionMongo = new resultado.sesion();
 const express = require('express');
 const multer = require('multer');
 const APP = express();
@@ -23,14 +22,11 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const { store } = require('./cookies/cookiesMongo.js');
 const { storeRedis } = require('./cookies/cookiesRedis.js');
-const {
-    isValidPassword,
-} = require('./passport/funcionesPassport/validacionContraseña.js');
-const {
-    createHash,
-} = require('./passport/funcionesPassport/validacionContraseña.js');
+const { isValidPassword } = require('./passport/funcionesPassport/validacionContraseña.js');
+const { createHash, } = require('./passport/funcionesPassport/validacionContraseña.js');
 const Usuarios = require('./models/usuarios.js');
 const { connect } = require('mongoose');
+const { logger } = require("./logs/logWinston.js");
 //ADMIN
 const admin = true;
 //USUARIO SESSION
@@ -188,8 +184,6 @@ APP.use(
 );
 APP.use(passport.initialize());
 APP.use(passport.session());
-/* rutaBase.use(passport.initialize())
-rutaBase.use(passport.session()) */
 
 http.listen(PORT, () => {
     console.log(
@@ -198,36 +192,59 @@ http.listen(PORT, () => {
 });
 rutaBase.get('', async (req, res) => {
     try {
-        /*     res.send(`Servidor express <span style="color:blueviolet;">(Nginx)</span> en ${PORT} - 
-                  <b>PID ${process.pid}</b> - ${new Date().toLocaleString()}`);
-                console.log(`port: ${PORT} -> Fyh: ${Date.now()}, PID ${process.pid}`); */
         let productosArray = await objeto.getAll();
+        /*    logger.log('info', "127.0.0.1 - log info", productosArray) */
         return res.render('pages/index', {
             producto: productosArray,
             usuarioLogeado: usuarioLogeado,
         });
         /*     res.json({ productosArray, admin }); */
-    } catch (err) {
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
         res.json({ error: err });
     }
 });
-rutaBase.get('/:id', async (req, res) => {
-    const { id } = req.params;
-    let buscandoProducto = await objeto.getById(id);
-    if (buscandoProducto == false) {
-        res.json({ error: 400, msj: 'solicitud no encontrada' });
-    } else {
-        res.json(buscandoProducto);
+/* rutaBase.get('/:id', async (req, res) => {
+    try {
+
+        const { id } = req.params;
+        let buscandoProducto = await objeto.getById(id);
+        if (buscandoProducto == false) {
+            res.json({ error: 400, msj: 'solicitud no encontrada' });
+        } else {
+            res.json(buscandoProducto);
+        }
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
+    }
+}); */
+APP.get('/showsession', (req, res) => {
+    try {
+        res.json(req.session);
+
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
     }
 });
-APP.get('/showsession', (req, res) => {
-    res.json(req.session);
-});
 APP.get('/faillogin', (req, res) => {
-    res.render('partials/loginFail');
+    try {
+
+        res.render('partials/loginFail');
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
+    }
 });
 APP.get('/failsignup', (req, res) => {
-    res.render('partials/signupFail');
+    try {
+
+        res.render('partials/signupFail');
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
+    }
 });
 APP.get('/login', async (req, res) => {
     try {
@@ -242,18 +259,61 @@ APP.get('/login', async (req, res) => {
         } else {
             res.render('partials/login');
         }
-    } catch (e) {
-        console.log('error en login', e);
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
     }
 });
-APP.post(
-    '/login',
-    passport.authenticate('login', {
-        successRedirect: '/login',
-        failureRedirect: '/faillogin',
-    })
-);
 
+const { fork } = require("child_process")
+
+rutaBase.get("/info", (req, res) => {
+    try {
+        console.log("a")
+        /*    let forkInfo = fork("./consoleLog.js")
+           forkInfo.send("start")
+           forkInfo.on("message", (msg) => {
+               let { data, type } = msg;
+               switch (type) {
+                   case "listo":
+                       let a = data
+   
+                       res.send(data)
+                       break;
+   
+                   case "otra cosa":
+                       console.log(data)
+                       break; */
+        /*    } */
+        /*   }) */
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
+    }
+})
+/* rutaBase.get("/info", (req, res) => {
+    try {
+
+        let forkInfo = fork("./consoleLog.js")
+        forkInfo.send("start")
+        forkInfo.on("message", (msg) => {
+            let { data, type } = msg;
+            switch (type) {
+                case "listo":
+                    let a = data
+
+                    break;
+
+                case "otra cosa":
+                    console.log(data)
+                    break;
+            }
+        })
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
+    }
+}) */
 APP.get('/signup', async (req, res) => {
     try {
         if (req.isAuthenticated()) {
@@ -266,8 +326,23 @@ APP.get('/signup', async (req, res) => {
         } else {
             res.render('partials/signup');
         }
-    } catch (err) {
-        console.log('error en signup', err);
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
+    }
+});
+
+APP.get('/logout', async (req, res) => {
+    //metodo post
+    try {
+
+        req.session.destroy((err) => {
+            if (err) res.send('error inesperado');
+            return res.redirect('http://127.0.0.1:8080/api/productos');
+        });
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
     }
 });
 APP.post(
@@ -277,29 +352,35 @@ APP.post(
         failureRedirect: 'failsignup',
     })
 );
-APP.get('/logout', async (req, res) => {
-    //metodo post
-    req.session.destroy((err) => {
-        if (err) res.send('error inesperado');
-        return res.redirect('http://127.0.0.1:8080/api/productos');
-    });
-});
+APP.post(
+    '/login',
+    passport.authenticate('login', {
+        successRedirect: '/login',
+        failureRedirect: '/faillogin',
+    })
+);
 rutaBase.post('/productosFaker', async (req, res) => {
-    const { body } = req;
-    const cant = body.id;
-    for (let index = 0; index < cant; index++) {
-        //arme el obj segun el modelo correspondiente
+    try {
 
-        const arrayFakeProducto = {
-            producto: commerce.product(),
-            precio: JSON.parse(commerce.price(50, 5000)),
-            img_url: `${image.image()}`,
-            stock: faker.datatype.number(100),
-            cantidad: 1,
-        };
-        await objeto.save(arrayFakeProducto);
+        const { body } = req;
+        const cant = body.id;
+        for (let index = 0; index < cant; index++) {
+            //arme el obj segun el modelo correspondiente
+
+            const arrayFakeProducto = {
+                producto: commerce.product(),
+                precio: JSON.parse(commerce.price(50, 5000)),
+                img_url: `${image.image()}`,
+                stock: faker.datatype.number(100),
+                cantidad: 1,
+            };
+            await objeto.save(arrayFakeProducto);
+        }
+        res.json({ success: true, msg: 'producto cargado' });
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
     }
-    res.json({ success: true, msg: 'producto cargado' });
 });
 rutaBase.post(
     '/uploadfile',
@@ -311,11 +392,17 @@ rutaBase.post(
         }
     },
     (req, res) => {
-        const { body } = req;
-        console.log(body);
-        objeto.save({ ...body });
+        try {
 
-        res.json({ success: true, msg: 'producto cargado' });
+            const { body } = req;
+            console.log(body);
+            objeto.save({ ...body });
+
+            res.json({ success: true, msg: 'producto cargado' });
+        } catch (error) {
+            logger.log('error', "127.0.0.1 - log error", error)
+            res.json({ error: err });
+        }
     }
 );
 //funciona por postman ↓
@@ -330,16 +417,23 @@ rutaBase.put(
         }
     },
     async (req, res) => {
-        const { id } = req.params;
-        const { body } = req;
-        await objeto.upDateById(id, body);
-        res.send('ok');
+        try {
+
+            const { id } = req.params;
+            const { body } = req;
+            await objeto.upDateById(id, body);
+            res.send('ok');
+        } catch (error) {
+            logger.log('error', "127.0.0.1 - log error", error)
+            res.json({ error: err });
+        }
     }
 );
 
 rutaBase.delete(
     '/:id',
     (req, res, next) => {
+
         if (admin == true) {
             next();
         } else {
@@ -347,13 +441,20 @@ rutaBase.delete(
         }
     },
     async (req, res) => {
-        const { id } = req.params;
 
-        let filtrandoProducto = await objeto.deleteById(id);
-        if (filtrandoProducto == false) {
-            res.json({ error: 'producto no encontrado' });
-        } else {
-            res.json({ success: true });
+        try {
+
+            const { id } = req.params;
+
+            let filtrandoProducto = await objeto.deleteById(id);
+            if (filtrandoProducto == false) {
+                res.json({ error: 'producto no encontrado' });
+            } else {
+                res.json({ success: true });
+            }
+        } catch (error) {
+            logger.log('error', "127.0.0.1 - log error", error)
+            res.json({ error: err });
         }
     }
 );
@@ -365,60 +466,93 @@ rutaCarrito.get('', async (req, res) => {
         let productosCarrito = await carritoConstructor.getAll();
 
         res.json(productosCarrito);
-    } catch (err) {
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
         res.json({ error: err });
     }
 });
 
 rutaCarrito.post('', async (req, res) => {
-    const { body } = req;
+    try {
 
-    const id = await body.id;
+        const { body } = req;
 
-    const buscandoProductoDbCarrito = await carritoConstructor.getById(id);
+        const id = await body.id;
 
-    if (
-        buscandoProductoDbCarrito == undefined ||
-        buscandoProductoDbCarrito == null
-    ) {
-        const buscandoProductoDb = await objeto.getById(id);
-        await carritoConstructor.post({ ...buscandoProductoDb, id });
-        const todo = await carritoConstructor.getAll();
-        return todo;
-    } else {
-        const cargandoProducto = await carritoConstructor.post({
-            ...buscandoProductoDbCarrito,
-            id,
-        });
+        const buscandoProductoDbCarrito = await carritoConstructor.getById(id);
 
-        return cargandoProducto;
+        if (
+            buscandoProductoDbCarrito == undefined ||
+            buscandoProductoDbCarrito == null
+        ) {
+            const buscandoProductoDb = await objeto.getById(id);
+            await carritoConstructor.post({ ...buscandoProductoDb, id });
+            const todo = await carritoConstructor.getAll();
+            return todo;
+        } else {
+            const cargandoProducto = await carritoConstructor.post({
+                ...buscandoProductoDbCarrito,
+                id,
+            });
+
+            return cargandoProducto;
+        }
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
     }
 });
 
 rutaCarrito.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-    let filtrandoProducto = carritoConstructor.deleteById(id);
+    try {
 
-    if (filtrandoProducto == false) {
-        res.json({ error: 'producto no encontrado' });
-    } else {
-        res.json({ success: true });
+        const { id } = req.params;
+        let filtrandoProducto = carritoConstructor.deleteById(id);
+
+        if (filtrandoProducto == false) {
+            res.json({ error: 'producto no encontrado' });
+        } else {
+            res.json({ success: true });
+        }
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
     }
 });
 
 rutaCarrito.delete('', async (req, res) => {
-    await carritoConstructor.deleteAll();
-    res.json({ success: true });
-});
+    try {
 
-rutaBase.get('*', function (req, res) {
-    res.json({ error: 404, descripcion: 'solicitud no encontrada' });
+        await carritoConstructor.deleteAll();
+        res.json({ success: true });
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err });
+    }
 });
 
 io.on('connection', (Socket) => {
-    Socket.on('msg', async (data) => {
-        await chat.save(data);
-        const todoElChat = await chat.getAll();
-        io.sockets.emit('chatLista', todoElChat);
-    });
+    try {
+        Socket.on('msg', async (data) => {
+            await chat.save(data);
+            const todoElChat = await chat.getAll();
+            io.sockets.emit('chatLista', todoElChat);
+        });
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: err, E: "aaaaaaaaaaaaaaaaaaaaaaaaa" });
+    }
 });
+
+rutaBase.get('*', (req, res) => {
+    try {
+        let dataTime = new Date()
+        logger.log('warn', "ruta inexistente", [{ path: req.path, Time: dataTime }])
+        res.json({ error: 404, descripcion: 'solicitud no encontrada' });
+    } catch (error) {
+        logger.log('error', "127.0.0.1 - log error", error)
+        res.json({ error: true, msg: error });
+    }
+});
+
+

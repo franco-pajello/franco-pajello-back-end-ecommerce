@@ -4,7 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "test": "node benchmark.js",
+    "startOx": "0x server.js"
   },
   "repository": {
     "type": "git",
@@ -18,9 +20,11 @@
   },
   "homepage": "https://github.com/franco-pajello/franco-pajello-back-end-ecommerce#readme",
   "dependencies": {
+    "autocannon": "^7.10.0",
     "bcrypt": "^5.1.0",
     "connect-mongo": "^4.6.0",
     "connect-redis": "^6.1.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
@@ -35,6 +39,7 @@
     "passport-local": "^1.0.0",
     "redis": "^4.5.1",
     "socket.io": "^4.5.3",
+    "winston": "^3.8.2",
     "yargs": "^17.6.2"
   },
   "devDependencies": {
