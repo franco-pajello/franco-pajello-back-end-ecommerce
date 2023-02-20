@@ -27,6 +27,7 @@ const { createHash, } = require('./passport/funcionesPassport/validacionContrase
 const Usuarios = require('./models/usuarios.js');
 const { connect } = require('mongoose');
 const { logger } = require("./logs/logWinston.js");
+const { url } = require('inspector');
 //ADMIN
 const admin = true;
 //USUARIO SESSION
@@ -204,21 +205,22 @@ rutaBase.get('', async (req, res) => {
         res.json({ error: err });
     }
 });
-/* rutaBase.get('/:id', async (req, res) => {
+rutaBase.get('/:id', async (req, res) => {
     try {
 
         const { id } = req.params;
         let buscandoProducto = await objeto.getById(id);
-        if (buscandoProducto == false) {
-            res.json({ error: 400, msj: 'solicitud no encontrada' });
+      
+        if (buscandoProducto == false | buscandoProducto == null |buscandoProducto ==undefined) {
+            res.redirect(`${id}`)
         } else {
             res.json(buscandoProducto);
-        }
+        } 
     } catch (error) {
         logger.log('error', "127.0.0.1 - log error", error)
-        res.json({ error: err });
+        res.redirect(`${id}`)
     }
-}); */
+}); 
 APP.get('/showsession', (req, res) => {
     try {
         res.json(req.session);
@@ -265,55 +267,14 @@ APP.get('/login', async (req, res) => {
     }
 });
 
-const { fork } = require("child_process")
-
 rutaBase.get("/info", (req, res) => {
     try {
-        console.log("a")
-        /*    let forkInfo = fork("./consoleLog.js")
-           forkInfo.send("start")
-           forkInfo.on("message", (msg) => {
-               let { data, type } = msg;
-               switch (type) {
-                   case "listo":
-                       let a = data
-   
-                       res.send(data)
-                       break;
-   
-                   case "otra cosa":
-                       console.log(data)
-                       break; */
-        /*    } */
-        /*   }) */
+        console.log("hola")
     } catch (error) {
         logger.log('error', "127.0.0.1 - log error", error)
         res.json({ error: err });
     }
 })
-/* rutaBase.get("/info", (req, res) => {
-    try {
-
-        let forkInfo = fork("./consoleLog.js")
-        forkInfo.send("start")
-        forkInfo.on("message", (msg) => {
-            let { data, type } = msg;
-            switch (type) {
-                case "listo":
-                    let a = data
-
-                    break;
-
-                case "otra cosa":
-                    console.log(data)
-                    break;
-            }
-        })
-    } catch (error) {
-        logger.log('error', "127.0.0.1 - log error", error)
-        res.json({ error: err });
-    }
-}) */
 APP.get('/signup', async (req, res) => {
     try {
         if (req.isAuthenticated()) {

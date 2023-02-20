@@ -35,7 +35,7 @@ class Contenedor {
 
             return TraerTodo;
         } catch (err) {
-            return { error: true, msg: err };
+            return undefined
         }
     }
     async getByOne(id) {

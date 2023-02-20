@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "startInspect": "node --inspect server.js",
     "start": "nodemon server.js",
     "test": "node benchmark.js",
     "startOx": "0x server.js"
